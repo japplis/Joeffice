@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Joeffice-Applet" basedir="..">
+  <description>Builds the Applet Joeffice.</description>
+
+  <target name="package-applet" description="Package the applet">
+    <property name="applet-path" location="c:/java/japplis/joeffice/joeffice.net" />
+    <delete dir="build/classes" />
+    <mkdir dir="build/classes" />
+    <javac destdir="build/classes" srcdir="tools/src" debug="true">
+      <include name="org/joeffice/applet/**" />
+      <classpath>
+        <fileset dir="${applet-path}">
+          <include name="*.jar" />
+        </fileset>
+      </classpath>
+    </javac>
+
+    <jar destfile="${applet-path}/JoefficeApplet.jar" basedir="build/classes">
+      <manifest>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="www.jappli.com www.japplis.com www.joeffice.net"/>
+        <attribute name="Application-Library-Allowable-Codebase" value="www.jappli.com www.japplis.com www.joeffice.net"/>
+        <attribute name="Implementation-Title" value="Joeffice"/>
+        <attribute name="Implementation-Vendor" value="Japplis"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="run-as-main" depends="package-applet" description="Run Joeffice from Java">
+    <java classname="org.joeffice.applet.JoefficeApplet">
+      <classpath>
+        <fileset dir="${applet-path}">
+          <include name="*.jar" />
+        </fileset>
+      </classpath>
+    </java>
+  </target>
+
+</project>

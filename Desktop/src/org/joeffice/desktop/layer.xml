@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Loaders">
+    <folder name="content">
+      <folder name="unknown">
+        <folder name="Actions">
+          <file name="org-netbeans-core-ui-options-filetypes-OpenAsAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-core-ui-options-filetypes-OpenAsAction.instance"/>
+            <attr name="position" intvalue="200"/>
+          </file>
+          <file name="org-netbeans-core-ui-sysopen-SystemOpenAction.shadow_hidden"/>
+        </folder>
+      </folder>
+    </folder>
+  </folder>
+  <folder name="Menu">
+    <file name="BuildProject_hidden"/>
+    <folder name="File">
+      <file name="Export_hidden"/>
+      <file name="Import_hidden"/>
+      <!--file name="SeparatorOpen.instance_hidden"/-->
+            <file name="org-netbeans-modules-project-ui-CloseProject.shadow_hidden"/>
+      <file name="org-netbeans-modules-project-ui-CustomizeProject.shadow_hidden"/>
+      <file name="org-netbeans-modules-project-ui-OpenProject.shadow_hidden"/>
+      <file name="org-netbeans-modules-project-ui-RecentProjects.shadow_hidden"/>
+      <file name="org-netbeans-modules-project-ui-groups-GroupsMenu.shadow_hidden"/>
+    </folder>
+    <folder name="Edit">
+      <folder name="Gimme More">
+        <attr name="displayName" bundlevalue="org.joeffice.desktop.Bundle#Menu/Edit/GimmeMore"/>
+        <attr name="position" intvalue="9999"/>
+      </folder>
+        </folder>
+    <file name="GoTo_hidden"/>
+    <folder name="Help">
+      <file name="netbeans-kb.url_hidden"/>
+            <file name="org-joeffice-desktop-WelcomeTopComponent.shadow_hidden"/>
+      <file name="org-netbeans-modules-autoupdate-ui-actions-CheckForUpdatesAction.shadow_hidden"/>
+      <file name="shortcuts.xml_hidden"/>
+    </folder>
+    <file name="RunProject_hidden"/>
+    <file name="Source_hidden"/>
+    <file name="Spacer.instance">
+      <attr name="instanceCreate" methodvalue="javax.swing.Box.createHorizontalGlue"/>
+      <attr name="position" intvalue="9005"/>
+    </file>
+    <folder name="View">
+      <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
+      <file name="org-netbeans-core-multiview-EditorsAction.instance_hidden"/>
+      <file name="org-netbeans-modules-editor-NbCodeFoldingAction.instance_hidden"/>
+      <file name="toggle-line-numbers.shadow_hidden"/>
+    </folder>
+    <folder name="Window">
+      <file name="Navigator_hidden"/>
+      <file name="Other_hidden"/>
+      <file name="Output_hidden"/>
+      <file name="Web_hidden"/>
+      <file name="org-joeffice-database-JDBCTopComponent.shadow_hidden"/>
+      <file name="org-joeffice-drawing-DrawingTopComponent.shadow_hidden"/>
+      <file name="org-joeffice-drawing-WidgetsPaletteTopComponent.shadow_hidden"/>
+      <file name="org-joeffice-presentation-SlidesTopComponent.shadow_hidden"/>
+      <file name="org-joeffice-spreadsheet-SpreadsheetTopComponent.shadow_hidden"/>
+      <file name="org-joeffice-wordprocessor-WordpTopComponent.shadow_hidden"/>
+      <file name="org-netbeans-modules-project-ui-logical-tab-action.shadow_hidden"/>
+    </folder>
+    <file name="org-netbeans-modules-quicksearch-QuickSearchAction.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
+      <attr name="position" intvalue="9010"/>
+    </file>
+  </folder>
+  <folder name="Office">
+  </folder>
+  <folder name="Services">
+    <folder name="AutoupdateType">
+      <file name="org_joeffice_desktop_update_center.instance">
+        <attr name="displayName" bundlevalue="org.joeffice.desktop.Bundle#Services/AutoupdateType/org_joeffice_desktop_update_center.instance"/>
+        <attr name="enabled" boolvalue="true"/>
+        <attr name="instanceCreate" methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
+        <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
+        <attr name="url" bundlevalue="org.joeffice.desktop.Bundle#org_joeffice_desktop_update_center"/>
+      </file>
+    </folder>
+  </folder>
+  <folder name="Toolbars">
+    <file name="Build_hidden"/>
+    <folder name="File">
+      <!--file name="org-joeffice-desktop-actions-NewFileAction.shadow_hidden"/-->
+      <file name="org-netbeans-modules-openfile-OpenFileAction.shadow">
+        <attr name="originalFile" stringvalue="Actions/System/org-netbeans-modules-openfile-OpenFileAction.instance"/>
+        <attr name="position" intvalue="150"/>
+      </file>
+      <file name="org-netbeans-modules-project-ui-NewProject.shadow_hidden"/>
+      <file name="org-netbeans-modules-project-ui-OpenProject.shadow_hidden"/>
+    </folder>
+    <folder name="Font">
+      <attr name="position" intvalue="2500"/>
+    </folder>
+    <folder name="Memory">
+      <file name="org-netbeans-modules-profiler-actions-SelfSamplerAction.shadow_hidden"/>
+    </folder>
+    <file name="Standard.xml" url="Standard.xml"/>
+  </folder>
+  <folder name="Shortcuts">
+    <file name="D-N.shadow">
+      <attr name="originalFile" stringvalue="Actions/Project/org-netbeans-modules-project-ui-NewFile.instance"/>
+    </file>
+    <file name="D-O.shadow">
+      <attr name="originalFile" stringvalue="Actions/System/org-netbeans-modules-openfile-OpenFileAction.instance"/>
+    </file>
+    <file name="D-S.shadow">
+      <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAction.instance"/>
+    </file>
+    <file name="DS-S.shadow">
+      <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAllAction.instance"/>
+    </file>
+    <file name="A-S.shadow">
+      <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAsAction.instance"/>
+    </file>
+    <file name="D-Z.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-UndoAction.instance"/>
+    </file>
+    <file name="D-Y.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-RedoAction.instance"/>
+    </file>
+    <file name="D-X.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-CutAction.instance"/>
+    </file>
+    <file name="D-C.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
+    </file>
+    <file name="D-V.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-PasteAction.instance"/>
+    </file>
+    <file name="DELETE.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-DeleteAction.instance"/>
+    </file>
+    <!-- The system doesn't seem to find the MainMenuAction -->
+    <!--file name="D-F3.shadow">
+      <attr name="originalFile" stringvalue="org-netbeans-modules-editor-MainMenuAction$FindSelectionAction.instance"/>
+    </file>
+    <file name="F3.shadow">
+      <attr name="originalFile" stringvalue="org-netbeans-modules-editor-MainMenuAction$FindNextAction.instance"/>
+    </file>
+    <file name="S-F3.shadow">
+      <attr name="originalFile" stringvalue="org-netbeans-modules-editor-MainMenuAction$FindPreviousAction.instance"/>
+    </file-->
+
+    <file name="D-F.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-FindAction.instance"/>
+    </file>
+    <file name="D-H.shadow">
+      <attr name="originalFile" stringvalue="Actions/Edit/org-openide-actions-ReplaceAction.instance"/>
+    </file>
+
+    <file name="D-W.shadow">
+      <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-CloseWindowAction.instance"/>
+    </file>
+    <file name="DS-W.shadow">
+      <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-CloseAllDocumentsAction.instance"/>
+    </file>
+    <file name="S-ESCAPE.shadow">
+      <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-MaximizeWindowAction.instance"/>
+    </file>
+    <file name="S-F4.shadow">
+      <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-DocumentsAction.instance"/>
+    </file>
+  </folder>
+  <folder name="WelcomePage"/>
+  <folder name="Windows2">
+    <folder name="Modes">
+      <folder name="explorer">
+        <file name="favorites.wstcref" url="favoritesWstcref.xml"/>
+      </folder>
+    </folder>
+  </folder>
+</filesystem>

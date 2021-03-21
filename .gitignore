@@ -1,0 +1,9 @@
+/build/
+/nbproject/private/
+/*/build/
+/*/test/
+/*/nbproject/private/
+
+.DS_Store
+
+/nbbuild/nbms/

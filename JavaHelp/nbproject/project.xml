@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>org.joeffice.javahelp</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>com.sun.java.help.impl</package>
+                <package>com.sun.java.help.search</package>
+                <package>javax.help</package>
+                <package>javax.help.event</package>
+                <package>javax.help.plaf</package>
+                <package>javax.help.plaf.basic</package>
+                <package>javax.help.plaf.gtk</package>
+                <package>javax.help.resources</package>
+                <package>javax.help.search</package>
+                <package>javax.help.tagext</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/javahelp-2.0.05.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/javahelp-2.0.05.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>
