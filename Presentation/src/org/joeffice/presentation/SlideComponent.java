@@ -21,6 +21,8 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
+
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.poi.xslf.usermodel.XSLFBackground;
@@ -30,25 +32,27 @@ import org.apache.poi.xslf.usermodel.XSLFSheet;
 /**
  * A component to show one slide.
  *
+ * This class doesn't require NetBeans application framework if slidesTopComponent is null.
+ *
  * @author Anthony Goubard - Japplis
  */
 public class SlideComponent extends JPanel {
 
     private XSLFSheet slide;
 
-    private SlidesTopComponent slidesComponent;
+    private JComponent slidesTopComponent;
 
     private double scale = 1.0;
 
     private BufferedImage backgroundImage;
 
-    public SlideComponent(XSLFSheet slide, SlidesTopComponent slidesComponent) {
-        this(slide, slidesComponent, new Dimension(1280, 720));
+    public SlideComponent(XSLFSheet slide, JComponent slidesTopComponent) {
+        this(slide, slidesTopComponent, new Dimension(1280, 720));
     }
 
-    public SlideComponent(XSLFSheet slide, SlidesTopComponent slidesComponent, Dimension maxSize) {
+    public SlideComponent(XSLFSheet slide, JComponent slidesTopComponent, Dimension maxSize) {
         this.slide = slide;
-        this.slidesComponent = slidesComponent;
+        this.slidesTopComponent = slidesTopComponent;
 
         if (slide.getBackground() != null) {
             Rectangle2D backgroundSize = slide.getBackground().getAnchor();
@@ -95,7 +99,7 @@ public class SlideComponent extends JPanel {
         return slide;
     }
 
-    public SlidesTopComponent getSlidesComponent() {
-        return slidesComponent;
+    public JComponent getSlidesComponent() {
+        return slidesTopComponent;
     }
 }

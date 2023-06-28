@@ -77,7 +77,6 @@ public class ShapeComponent extends JPanel implements DocumentListener {
                 ((XSLFTextShape) shape).getSheet() instanceof XSLFNotes)) {
             handleTextShape((XSLFTextShape) shape);
         } else {
-
             double scale = slideComponent.getScale();
             BufferedImage img = shapeToImage(shape, scale);
             JLabel shapeLabel = new JLabel(new ImageIcon(img));
@@ -91,9 +90,8 @@ public class ShapeComponent extends JPanel implements DocumentListener {
         Graphics2D graphics = img.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        //graphics.translate(-shape.getAnchor().getX() * scale, -shape.getAnchor().getY() * scale);
-        graphics.scale(scale, scale);
-        Rectangle2D.Double bounds = new Rectangle2D.Double(shape.getAnchor().getX() * scale, shape.getAnchor().getY() * scale, img.getWidth(), img.getHeight());
+        graphics.translate(-shape.getAnchor().getX(), -shape.getAnchor().getY());
+        Rectangle2D.Double bounds = new Rectangle2D.Double(shape.getAnchor().getX(), shape.getAnchor().getY(), img.getWidth(), img.getHeight());
         shape.draw(graphics, bounds);
         graphics.dispose();
         return img;
@@ -139,7 +137,8 @@ public class ShapeComponent extends JPanel implements DocumentListener {
         add(textField);
         if (editable) {
             textField.getDocument().addDocumentListener(this);
-            textField.getDocument().addUndoableEditListener((UndoRedo.Manager) getSlideComponent().getSlidesComponent().getUndoRedo());
+            SlidesTopComponent slidesTopComponent = (SlidesTopComponent) getSlideComponent().getSlidesComponent();
+            textField.getDocument().addUndoableEditListener((UndoRedo.Manager) slidesTopComponent.getUndoRedo());
             textField.addFocusListener(new FocusListener() {
 
                 @Override
@@ -256,14 +255,15 @@ public class ShapeComponent extends JPanel implements DocumentListener {
     public void changedUpdate(DocumentEvent de) {
         try {
             ((XSLFTextShape) shape).setText(de.getDocument().getText(0, de.getDocument().getLength()));
-            getSlideComponent().getSlidesComponent().getDataObject().setModified(true);
+            OfficeTopComponent topComponent = (OfficeTopComponent) getSlideComponent().getSlidesComponent();
+            topComponent.getDataObject().setModified(true);
         } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
 
     public void registerActions(JTextPane textField) {
-        OfficeTopComponent topComponent = getSlideComponent().getSlidesComponent();
+        OfficeTopComponent topComponent = (OfficeTopComponent) getSlideComponent().getSlidesComponent();
         ActionMap topComponentActions = topComponent.getActionMap();
         ActionMap textFieldActions = textField.getActionMap();
 
@@ -276,7 +276,7 @@ public class ShapeComponent extends JPanel implements DocumentListener {
     }
 
     public void unregisterActions() {
-        OfficeTopComponent topComponent = getSlideComponent().getSlidesComponent();
+        OfficeTopComponent topComponent = (OfficeTopComponent) getSlideComponent().getSlidesComponent();
         ActionMap topComponentActions = topComponent.getActionMap();
 
         // Deactivates the cut / copy / paste buttons

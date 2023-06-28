@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Japplis.
+ * Copyright 2013-2022 Japplis.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class SheetTable extends JTable {
             }
             addCellToSelection(rowIndex, columnIndex);
             Point extendCell = new Point(rowIndex, columnIndex);
-            if (!extend) {
+            if (!extend || firstExtendCell == null) {
                 firstExtendCell = extendCell;
                 lastExtendCell = null;
             } else if (lastExtendCell == null || !extendCell.equals(lastExtendCell)) {

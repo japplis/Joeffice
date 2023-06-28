@@ -16,6 +16,8 @@
 package org.joeffice.spreadsheet.cell;
 
 import java.awt.Component;
+import java.util.EnumSet;
+
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,6 +30,7 @@ import org.apache.poi.ss.usermodel.Cell;
 public class CellEditor extends DefaultCellEditor implements TableCellEditor {
 
     public final static CellEditor DEFAULT_EDITOR = new CellEditor();
+    public final static CellRenderer DEFAULT_RENDERER = new CellRenderer();
 
     public CellEditor() {
         super(new JTextField());
@@ -41,7 +44,7 @@ public class CellEditor extends DefaultCellEditor implements TableCellEditor {
                     getTableCellEditorComponent(table, null, isSelected, row, column);
             Cell cell = (Cell) value;
             ((JTextField) getComponent()).setText(CellUtils.getFormattedText(cell));
-            CellRenderer.decorateComponent(cell, (JComponent) getComponent(), defaultComponent);
+            DEFAULT_RENDERER.renderCell(cell, (JComponent) getComponent(), defaultComponent, EnumSet.of(CellRenderer.Feature.BACKGROUND, CellRenderer.Feature.FONT, CellRenderer.Feature.BORDER));
         }
         return getComponent();
     }

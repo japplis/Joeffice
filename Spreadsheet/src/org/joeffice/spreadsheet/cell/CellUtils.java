@@ -16,15 +16,14 @@
 package org.joeffice.spreadsheet.cell;
 
 import java.awt.Color;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.swing.JTable;
+
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -42,17 +41,18 @@ import org.joeffice.spreadsheet.sheet.SheetTableModel;
  */
 public class CellUtils {
 
-    private final static NumberFormat NUMBER_FORMATTER = DecimalFormat.getInstance();
-    private final static DateFormat DATE_FORMATTER = DateFormat.getDateInstance();
-    private final static DateFormat TIME_FORMATTER = DateFormat.getTimeInstance();
-    private final static NumberFormat CURRENCY_FORMATTER = DecimalFormat.getCurrencyInstance();
+    private final static DataFormatter DATA_FORMATTER = new DataFormatter();
+
+    // Only static methods
+    private CellUtils() {
+    }
 
     /**
      * Converts a POI color to an AWT color.
      */
     public static Color shortToColor(short xlsColorIndex) {
         if (xlsColorIndex > 0) {
-            HSSFColor xlsColor = HSSFColor.getIndexHash().get(new Integer(xlsColorIndex));
+            HSSFColor xlsColor = HSSFColor.getIndexHash().get(Integer.valueOf(xlsColorIndex));
             if (xlsColor != null) {
                 short[] rgb = xlsColor.getTriplet();
                 return new Color(rgb[0], rgb[1], rgb[2]);
@@ -180,19 +180,39 @@ public class CellUtils {
             return "";
         }
         CellType type = cell.getCellType();
+        if (type == CellType.FORMULA) {
+            type = cell.getCachedFormulaResultType();
+        }
+        if (type == CellType.STRING) {
+            return cell.getStringCellValue();
+        } else if (type == CellType.NUMERIC) {
+            return DATA_FORMATTER.formatCellValue(cell);
+        } else if (type == CellType.BOOLEAN) {
+            return String.valueOf(cell.getBooleanCellValue());
+        }
+        return "";
+    }
+
+    public static Comparable getCellValue(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        CellType type = cell.getCellType();
+        if (type == CellType.FORMULA) {
+            type = cell.getCachedFormulaResultType();
+        }
         if (type == CellType.STRING) {
             return cell.getStringCellValue();
         } else if (type == CellType.NUMERIC) {
             if (DateUtil.isCellDateFormatted(cell)) {
-                return DATE_FORMATTER.format(cell.getDateCellValue());
+                return cell.getDateCellValue();
             } else {
-                return NUMBER_FORMATTER.format(cell.getNumericCellValue());
+                return cell.getNumericCellValue();
             }
         } else if (type == CellType.BOOLEAN) {
-            return String.valueOf(cell.getBooleanCellValue());
-        } else {
-            return "";
+            return cell.getBooleanCellValue();
         }
+        return "";
     }
 
     public static int[] getSelectedColumns(JTable table, int[] rows) {

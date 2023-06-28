@@ -161,7 +161,8 @@ public abstract class OfficeDataObject extends MultiDataObject implements OpenCo
         Set<TopComponent> openTopComponents = WindowManager.getDefault().getRegistry().getOpened();
         for (TopComponent officeComponent : openTopComponents) {
             if (officeComponent.getLookup().lookup(OfficeDataObject.class) != null
-                    && officeComponent.getLookup().lookup(OfficeDataObject.class).getPrimaryFile().equals(getPrimaryFile())) {
+                    && officeComponent.getLookup().lookup(OfficeDataObject.class).getPrimaryFile().equals(getPrimaryFile())
+                    && officeComponent instanceof OfficeTopComponent) {
                 return (OfficeTopComponent) officeComponent;
             }
         }

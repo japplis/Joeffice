@@ -17,12 +17,13 @@ package org.joeffice.wordprocessor.reader;
 
 import javax.swing.text.*;
 import javax.swing.text.Document;
+
 import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.ImageIcon;
 
 import javax.swing.UIManager;
@@ -31,7 +32,6 @@ import org.joeffice.wordprocessor.DocxDocument;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.LineSpacingRule;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
-import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFPicture;
@@ -39,6 +39,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.joeffice.wordprocessor.DocxFontUtils;
 import org.openxmlformats.schemas.officeDocument.x2006.sharedTypes.STVerticalAlignRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor;
@@ -140,7 +141,7 @@ public class POIDocxReader {
         } else if (alignment == ParagraphAlignment.BOTH || alignment == ParagraphAlignment.DISTRIBUTE) {
             StyleConstants.setAlignment(parAttrs, StyleConstants.ALIGN_JUSTIFIED);
         }
-        List<TabStop> tabs = new ArrayList<>();
+        //List<TabStop> tabs = new ArrayList<>();
         int leftIndentation = paragraph.getIndentationLeft();
         if (leftIndentation > 0) {
             float indentation = leftIndentation / INDENTS_MULTIPLIER;
@@ -189,27 +190,27 @@ public class POIDocxReader {
     protected void processRun(XWPFRun run) throws BadLocationException {
         charAttrs = new SimpleAttributeSet();
 
-        if (run.getFontSize() > 0) {
-            int size = run.getFontSize();
-            StyleConstants.setFontSize(charAttrs, size);
+        int fontSize = DocxFontUtils.getFontSize(run);
+        if (fontSize > 0) {
+            StyleConstants.setFontSize(charAttrs, fontSize);
         }
-        StyleConstants.setBold(charAttrs, run.isBold());
-        StyleConstants.setItalic(charAttrs, run.isItalic());
-        StyleConstants.setStrikeThrough(charAttrs, run.isStrike());
-        boolean underlined = run.getUnderline() != UnderlinePatterns.NONE;
-        StyleConstants.setUnderline(charAttrs, underlined);
+        StyleConstants.setBold(charAttrs, DocxFontUtils.isBold(run));
+        StyleConstants.setItalic(charAttrs, DocxFontUtils.isItalic(run));
+        StyleConstants.setStrikeThrough(charAttrs, DocxFontUtils.isStrikeThrough(run));
+        StyleConstants.setUnderline(charAttrs, DocxFontUtils.isUnderlined(run));
         STVerticalAlignRun.Enum verticalAlignment = run.getVerticalAlignment();
         if (verticalAlignment == STVerticalAlignRun.SUBSCRIPT) {
             StyleConstants.setSubscript(parAttrs, true);
+            StyleConstants.setFontSize(charAttrs, fontSize / 2);
         } else if (verticalAlignment == STVerticalAlignRun.SUPERSCRIPT) {
             StyleConstants.setSuperscript(parAttrs, true);
+            StyleConstants.setFontSize(charAttrs, fontSize / 2);
         } else {
             StyleConstants.setSubscript(parAttrs, false);
             StyleConstants.setSuperscript(parAttrs, false);
         }
-        if (run.getFontFamily() != null) {
-            StyleConstants.setFontFamily(charAttrs, run.getFontFamily());
-        }
+        String fontFamily = DocxFontUtils.getFontFamily(run);
+        StyleConstants.setFontFamily(charAttrs, fontFamily);
         if (run.getColor() != null) {
             String name = run.getColor();
             if (!name.toLowerCase().equals("auto")) {

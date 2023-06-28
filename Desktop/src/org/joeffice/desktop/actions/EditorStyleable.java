@@ -19,7 +19,6 @@ import static java.awt.font.TextAttribute.*;
 import static org.joeffice.desktop.actions.ExtraTextAttribute.*;
 import static javax.swing.text.StyleConstants.*;
 
-import java.awt.font.TextAttribute;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.text.AttributedString;

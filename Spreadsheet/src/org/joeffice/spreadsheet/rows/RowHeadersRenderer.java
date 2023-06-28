@@ -28,16 +28,16 @@ import javax.swing.table.TableCellRenderer;
  */
 public class RowHeadersRenderer extends JToggleButton implements TableCellRenderer {
 
-    public RowHeadersRenderer() {
-    }
-
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         setBorderPainted(false);
         setBorder(null);
         setMargin(new Insets(0, 0, 0, 0));
         setContentAreaFilled(false);
-        setText("" + value);
+        String sValue = "" + value;
+        setText(sValue);
+        if (sValue.length() > 5) setToolTipText(sValue);
+        else setToolTipText(null);
         return this;
     }
 }

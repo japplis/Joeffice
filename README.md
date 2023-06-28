@@ -12,7 +12,7 @@ Joeffice modules and file extensions supported:
 * Database (h2)
 
 Joeffice uses the following libraries:
-* The NetBeans Platform (12.3) https://netbeans.org/features/platform/
+* The NetBeans Platform (16) https://netbeans.org/features/platform/
 * Apache POI (5.0.0) https://poi.apache.org/
 * H2 Database (1.4.200) https://www.h2database.com/
 * Batik (included in Apache POI) https://xmlgraphics.apache.org/batik/
@@ -33,17 +33,20 @@ What are the advantages compared to Microsoft Office:
 * Window docking of documents in the application
 * Can be included in your company Java applications (Apache License)
 
-TODO
+### TODO
  * Recent files
  * Macro system (Edit -> Macro)
  * Fix actions
  * @ActionState
  * Fails on Java 16 (NetBeans framework exceptions thrown)
 
-How to contribute:
+### How to contribute:
  * There are a few FIXME in the code
  * Submit merge request
  * For large contributions, sign the contributor license agreement which stays that you and your company donate the code to this project.
 
-For feature requests:
+### Sponsors
+ * [Japplis](https://www.japplis.com) _better tools, better jobs_
+
+### For feature requests:
  * Contact info@japplis.com

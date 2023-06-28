@@ -63,9 +63,7 @@ import org.openide.util.Utilities;
     "HINT_WordProcessorTopComponent=This is a Word processor window"
 })
 public final class WordProcessorTopComponent extends OfficeTopComponent implements DocumentListener {
-
     private TextUndoManager undoRedo = new TextUndoManager();
-    private EditorStyleable styleable;
 
     public WordProcessorTopComponent() {
         this(Utilities.actionsGlobalContext().lookup(DocxDataObject.class));
@@ -77,17 +75,8 @@ public final class WordProcessorTopComponent extends OfficeTopComponent implemen
 
     @Override
     protected JComponent createMainComponent() {
-        JTextPane editor = new JTextPane();
-        editor.setEditorKit(new DocxEditorKit());
-        styleable = new EditorStyleable(editor);
-        editor.setTransferHandler(new RichTextTransferHandler());
-        editor.putClientProperty("print.printable", Boolean.TRUE);
-
-        // Doesn't work
-        editor.setSize(new Dimension(545, Integer.MAX_VALUE));
-        editor.setPreferredSize(new Dimension(545, Integer.MAX_VALUE));
-        editor.setMaximumSize(new Dimension(545, Integer.MAX_VALUE));
-        return editor;
+        WordProcessorComponent wordProcessor = new WordProcessorComponent();
+        return wordProcessor;
     }
 
     @Override
@@ -97,23 +86,17 @@ public final class WordProcessorTopComponent extends OfficeTopComponent implemen
 
     @Override
     public Object loadDocument(final File docxFile) throws Exception {
-        try (FileInputStream docxIS = new FileInputStream(docxFile)) {
-            JTextPane wordProcessor = (JTextPane) getMainComponent();
-            wordProcessor.getEditorKit().read(docxIS, wordProcessor.getDocument(), 0);
-            XWPFDocument poiDocument = (XWPFDocument) wordProcessor.getDocument().getProperty("XWPFDocument");
-            return poiDocument;
-        } catch (IOException | BadLocationException ex) {
-            throw ex;
-        }
+        WordProcessorComponent wordProcessor = (WordProcessorComponent) getMainComponent();
+        return wordProcessor.loadDocument(docxFile);
     }
 
     @Override
     public void documentLoaded() {
-        JTextPane editor = ((JTextPane) getMainComponent());
-        Document document = editor.getDocument();
+        WordProcessorComponent wordProcessor = (WordProcessorComponent) getMainComponent();
+        Document document = wordProcessor.getDocument();
         document.addDocumentListener(this);
         document.addUndoableEditListener(undoRedo);
-        document.addDocumentListener(new DocumentUpdater(getPOIDocument()));
+        document.addDocumentListener(new DocumentUpdater(wordProcessor.getPOIDocument()));
 
         // Doesn't do anything (yet)
         // This require the implementation of a TokenListProvider and of a TokenList
@@ -126,18 +109,19 @@ public final class WordProcessorTopComponent extends OfficeTopComponent implemen
 
     @Override
     protected void componentActivated() {
-        JTextPane wordProcessor = (JTextPane) getMainComponent();
+        WordProcessorComponent wordProcessor = (WordProcessorComponent) getMainComponent();
         ActionMap editorActionMap = wordProcessor.getActionMap();
         getActionMap().put(DefaultEditorKit.cutAction, editorActionMap.get(DefaultEditorKit.cutAction));
         getActionMap().put(DefaultEditorKit.copyAction, editorActionMap.get(DefaultEditorKit.copyAction));
         getActionMap().put(DefaultEditorKit.pasteAction, editorActionMap.get(DefaultEditorKit.pasteAction));
-        getServices().add(styleable);
+        getServices().add(wordProcessor.getStyleable());
         super.componentActivated();
     }
 
     @Override
     protected void componentDeactivated() {
-        getServices().remove(styleable);
+        WordProcessorComponent wordProcessor = (WordProcessorComponent) getMainComponent();
+        getServices().remove(wordProcessor.getStyleable());
         super.componentDeactivated();
     }
 

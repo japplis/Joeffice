@@ -68,7 +68,8 @@ public final class SpreadsheetTopComponent extends OfficeTopComponent {
 
     @Override
     protected JComponent createMainComponent() {
-        SpreadsheetComponent spreadsheet = new SpreadsheetComponent(this);
+        SpreadsheetComponent spreadsheet = new SpreadsheetComponent();
+        spreadsheet.setSpreadsheetAndToolbar(this);
         return spreadsheet;
     }
 

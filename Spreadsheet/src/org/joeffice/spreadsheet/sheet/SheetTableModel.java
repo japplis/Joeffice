@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Japplis.
+ * Copyright 2013-2023 Japplis.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,31 +28,39 @@ import org.joeffice.spreadsheet.cell.CellUtils;
 public class SheetTableModel extends AbstractTableModel {
 
     private Sheet sheet;
+    private boolean extraSpace;
+    private boolean editable = true;
 
     public SheetTableModel(Sheet sheet) {
+        this(sheet, true);
+    }
+
+    public SheetTableModel(Sheet sheet, boolean extraSpace) {
         this.sheet = sheet;
+        this.extraSpace = extraSpace;
     }
 
     @Override
     public int getRowCount() {
         int lastRowNum = getLastRowNum();
+        if (!extraSpace) return lastRowNum;
         if (lastRowNum < 100) {
             return lastRowNum + 100;
         } else {
             return lastRowNum + 30;
         }
     }
+
     public int getLastRowNum() {
         return sheet.getLastRowNum();
     }
 
     public int getLastColumnNum() {
-        int lastRowNum = sheet.getLastRowNum();
         int lastColumn = 0;
-        for (int i = 0; i < lastRowNum; i++) {
+        for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             if (row != null) {
-                int lastCell = row.getLastCellNum() - 1;
+                int lastCell = row.getLastCellNum();
                 if (lastColumn < lastCell) {
                     lastColumn = lastCell;
                 }
@@ -64,6 +72,7 @@ public class SheetTableModel extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         int lastColumn = getLastColumnNum();
+        if (!extraSpace) return lastColumn;
         if (lastColumn < 20) {
             return lastColumn + 26;
         } else {
@@ -84,7 +93,11 @@ public class SheetTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        return editable;
+    }
+    
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     @Override

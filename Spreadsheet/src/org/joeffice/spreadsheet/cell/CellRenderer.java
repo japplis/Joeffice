@@ -18,13 +18,13 @@ package org.joeffice.spreadsheet.cell;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.NumberFormat;
+import java.util.EnumSet;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.xmlbeans.impl.values.XmlValueDisconnectedException;
@@ -39,14 +39,20 @@ import org.joeffice.spreadsheet.SpreadsheetTopComponent;
  */
 public class CellRenderer extends DefaultTableCellRenderer {
 
+    public enum Feature { TEXT, ALIGNMENT, FONT, BACKGROUND, BORDER, COMMENT };
+
     // Formatters
     private final static DataFormatter DATA_FORMATTER = new DataFormatter();
+    private final static CellRenderer DEFAULT_RENDERER = new CellRenderer();
 
-    private final static TableCellRenderer DEFAULT_RENDERER = new CellRenderer();
     private FormulaEvaluator formulaEvaluator;
+    private float windowsFontZoom = 1.0f; // Swing seems to use 72 DPI and Windows 96 DPI
 
     public CellRenderer() {
         DATA_FORMATTER.setDefaultNumberFormat(NumberFormat.getInstance());
+        if (System.getProperty("os.name").contains("Windows")) {
+            windowsFontZoom = 96 / 72.0f;
+        }
     }
 
     @Override
@@ -58,7 +64,7 @@ public class CellRenderer extends DefaultTableCellRenderer {
             JLabel defaultComponent = (JLabel) DEFAULT_RENDERER.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
             Cell cell = (Cell) value;
             try {
-                decorateLabel(cell, defaultComponent);
+                renderCell(cell, this, defaultComponent, EnumSet.allOf(Feature.class));
             } catch (XmlValueDisconnectedException ex) {
                 reloadTableModel();
             }
@@ -66,42 +72,65 @@ public class CellRenderer extends DefaultTableCellRenderer {
         return this;
     }
 
-    public void decorateLabel(Cell cell, JLabel defaultRenderer) {
+    public void renderCell(Cell cell, JComponent renderingComponent, JComponent defaultRenderer, EnumSet<Feature> features) {
+        if (features.contains(Feature.TEXT) && renderingComponent instanceof JLabel) {
+            renderText(cell, (JLabel) renderingComponent);
+        }
+        if (features.contains(Feature.BACKGROUND)) {
+            renderBackground(cell, renderingComponent, defaultRenderer);
+        }
+        if (features.contains(Feature.FONT)) {
+            renderFont(cell, renderingComponent, defaultRenderer);
+        }
+        if (features.contains(Feature.BORDER)) {
+            // At the moment done in renderer but should be done with a JLayer to paint over the grid
+            renderingComponent.setBorder(new CellBorder(cell));
+        }
+        if (features.contains(Feature.COMMENT)) {
+            if (cell.getCellComment() != null) {
+                renderingComponent.setToolTipText(cell.getCellComment().getString().getString());
+            } else {
+                renderingComponent.setToolTipText(null);
+            }
+        }
+        if (features.contains(Feature.ALIGNMENT) && renderingComponent instanceof JLabel) {
+            alignCell(cell, (JLabel) renderingComponent, defaultRenderer);
+        }
+    }
 
-        // Text
+    private void renderText(Cell cell, JLabel renderingComponent) {
         // String text = getFormattedText(cell);
         // XXX small bug with decimal not using the correct comma's
         if (cell.getCellType() == CellType.FORMULA && formulaEvaluator == null) {
             formulaEvaluator = cell.getRow().getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
         }
         String text = DATA_FORMATTER.formatCellValue(cell, formulaEvaluator);
-        setText(text);
+        renderingComponent.setText(text);
+    }
 
-        decorateComponent(cell, this, defaultRenderer);
-
-        // Alignment
+    private void alignCell(Cell cell, JLabel renderingComponent, JComponent defaultRenderer) {
         CellStyle style = cell.getCellStyle();
         HorizontalAlignment alignment = style.getAlignment();
         if (alignment == HorizontalAlignment.CENTER || cell.getCellType() == CellType.BOOLEAN) {
-            setHorizontalAlignment(SwingConstants.CENTER);
+            renderingComponent.setHorizontalAlignment(CENTER);
         } else if (alignment == HorizontalAlignment.RIGHT || cell.getCellType() == CellType.NUMERIC) {
-            setHorizontalAlignment(SwingConstants.RIGHT);
-        } else {
-            setHorizontalAlignment(defaultRenderer.getHorizontalAlignment());
+            renderingComponent.setHorizontalAlignment(RIGHT);
+        } else if (defaultRenderer instanceof JLabel) {
+            renderingComponent.setHorizontalAlignment(((JLabel) defaultRenderer).getHorizontalAlignment());
         }
         VerticalAlignment verticalAlignment = style.getVerticalAlignment();
         if (verticalAlignment == VerticalAlignment.TOP) {
-            setVerticalAlignment(SwingConstants.TOP);
+            renderingComponent.setVerticalAlignment(TOP);
         } else if (verticalAlignment == VerticalAlignment.CENTER) {
-            setVerticalAlignment(SwingConstants.CENTER);
+            renderingComponent.setVerticalAlignment(CENTER);
         } else if (verticalAlignment == VerticalAlignment.BOTTOM) {
-            setVerticalAlignment(SwingConstants.BOTTOM);
-        } else {
-            setVerticalAlignment(defaultRenderer.getVerticalAlignment());
+            renderingComponent.setVerticalAlignment(BOTTOM);
+        } else if (defaultRenderer instanceof JLabel) {
+            renderingComponent.setVerticalAlignment(((JLabel) defaultRenderer).getVerticalAlignment());
         }
     }
 
-    public static void decorateComponent(Cell cell, JComponent renderingComponent, JComponent defaultRenderer) {
+    private void renderBackground(Cell cell, JComponent renderingComponent, JComponent defaultRenderer) {
         CellStyle style = cell.getCellStyle();
 
         // Background neither the index or the color works for XSSF cells
@@ -111,25 +140,28 @@ public class CellRenderer extends DefaultTableCellRenderer {
         } else {
             renderingComponent.setBackground(defaultRenderer.getBackground());
         }
+    }
+
+    private void renderFont(Cell cell, JComponent renderingComponent, JComponent defaultRenderer) {
+        CellStyle style = cell.getCellStyle();
 
         // Font and foreground
         int fontIndex = style.getFontIndex();
         if (fontIndex >= 0) {
             Font xlsFont = cell.getSheet().getWorkbook().getFontAt(fontIndex);
             java.awt.Font font = java.awt.Font.decode(xlsFont.getFontName());
-            font = font.deriveFont((float) xlsFont.getFontHeightInPoints());
+            font = font.deriveFont(xlsFont.getFontHeightInPoints() * windowsFontZoom);
             font = font.deriveFont(java.awt.Font.PLAIN);
-            if (xlsFont.getItalic()) {
+            if (xlsFont.getItalic() && xlsFont.getBold()) {
+                font = font.deriveFont(java.awt.Font.ITALIC | java.awt.Font.BOLD);
+            } else if (xlsFont.getItalic()) {
                 font = font.deriveFont(java.awt.Font.ITALIC);
-            }
-            if (xlsFont.getBold()) {
+            } else if (xlsFont.getBold()) {
                 font = font.deriveFont(java.awt.Font.BOLD);
             }
             if (xlsFont.getUnderline() > Font.U_NONE) {
                 // no underline in fonts
             }
-            //short fontColorIndex = xlsFont.getColor();
-            //Color fontColor = CellUtils.shortToColor(fontColorIndex);
             Color fontColor = CellUtils.getFontColor(xlsFont, cell.getSheet().getWorkbook());
             if (fontColor != null && !fontColor.equals(Color.BLACK)) {
                 renderingComponent.setForeground(fontColor);
@@ -141,14 +173,10 @@ public class CellRenderer extends DefaultTableCellRenderer {
             renderingComponent.setForeground(defaultRenderer.getForeground());
             renderingComponent.setFont(defaultRenderer.getFont());
         }
+    }
 
-        // Borders
-        // At the moment done in renderer but should be done with a JLayer to paint over the grid
-        renderingComponent.setBorder(new CellBorder(cell));
-
-        if (cell.getCellComment() != null) {
-            renderingComponent.setToolTipText(cell.getCellComment().getString().getString());
-        }
+    public CellRenderer getDefaultRenderer() {
+        return DEFAULT_RENDERER;
     }
 
     // Due to https://issues.apache.org/bugzilla/show_bug.cgi?id=49940

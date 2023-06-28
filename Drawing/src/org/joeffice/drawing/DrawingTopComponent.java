@@ -84,7 +84,6 @@ public final class DrawingTopComponent extends OfficeTopComponent {
 
     @Override
     protected Object loadDocument(File svgFile) throws Exception {
-
         String xmlParser = XMLResourceDescriptor.getXMLParserClassName();
         SAXSVGDocumentFactory svgFactory = new SAXSVGDocumentFactory(xmlParser);
         String uri = Utilities.toURI(svgFile).toURL().toString();

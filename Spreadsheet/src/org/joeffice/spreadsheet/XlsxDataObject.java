@@ -18,7 +18,6 @@ package org.joeffice.spreadsheet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -135,7 +134,7 @@ public class XlsxDataObject extends OfficeDataObject {
             try {
                 Workbook workbook = JoefficeWorkbookFactory.create(FileUtil.toFile(getPrimaryFile()));
                 setDocument(workbook);
-            } catch (InvalidFormatException ex) {
+            } catch (IllegalStateException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }

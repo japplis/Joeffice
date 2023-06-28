@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Japplis.
+ * Copyright 2013-2022 Japplis.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,19 @@
  */
 package org.joeffice.spreadsheet;
 
-import org.joeffice.spreadsheet.cell.CellUtils;
-import static javax.swing.TransferHandler.MOVE;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.util.ArrayUtil;
-
+import org.joeffice.spreadsheet.cell.CellUtils;
 import org.joeffice.desktop.ui.OfficeTransferHandler;
 
+import org.apache.poi.ss.usermodel.Cell;
+
+import static javax.swing.TransferHandler.MOVE;
 
 /**
  * Transfer handler that support rich text.

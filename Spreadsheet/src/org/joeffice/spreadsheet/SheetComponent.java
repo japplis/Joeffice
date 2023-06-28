@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Japplis.
+ * Copyright 2013-2022 Japplis.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,9 @@
  */
 package org.joeffice.spreadsheet;
 
-import static javax.swing.JLayeredPane.DEFAULT_LAYER;
+import java.awt.*;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.DefaultEditorKit;
@@ -47,19 +41,24 @@ import org.joeffice.spreadsheet.sheet.SheetTableModel;
  */
 public class SheetComponent extends JPanel {
 
+    public static final String SHEET_MODIFIED_PROPERTY = "SheetModified";
     public static final short EXCEL_COLUMN_WIDTH_FACTOR = 256;
     public static final int UNIT_OFFSET_LENGTH = 7;
-    public static final int CELL_HEIGHT_MARGINS = 2;
-
-    private SpreadsheetComponent spreadsheetComponent;
+    public static final int CELL_HEIGHT_MARGINS = 1;
+    public static final int CELL_EXTRA_HEIGHT_MARGINS = 5;
 
     private JLayeredPane layers;
     private JTable sheetTable;
     private Sheet sheet;
+    private boolean addExtraSpace;
 
-    public SheetComponent(Sheet sheet, SpreadsheetComponent spreadsheetComponent) {
+    public SheetComponent(Sheet sheet) {
+        this(sheet, true);
+    }
+
+    public SheetComponent(Sheet sheet, boolean addExtraSpace) {
         this.sheet = sheet;
-        this.spreadsheetComponent = spreadsheetComponent;
+        this.addExtraSpace = addExtraSpace;
         initComponent();
     }
 
@@ -77,27 +76,29 @@ public class SheetComponent extends JPanel {
     }
 
     public JTable createTable(Sheet sheet) {
-        SheetTableModel sheetTableModel = new SheetTableModel(sheet);
+        SheetTableModel sheetTableModel = new SheetTableModel(sheet, addExtraSpace);
         JTable table = new SheetTable(sheetTableModel);
 
-        table.setDefaultRenderer(Cell.class, new CellRenderer());
+        CellRenderer cellRenderer = new CellRenderer();
+        table.setDefaultRenderer(Cell.class, cellRenderer);
         TableCellEditor editor = new org.joeffice.spreadsheet.cell.CellEditor();
         table.setDefaultEditor(Cell.class, editor);
         int columnsCount = sheetTableModel.getColumnCount();
         for (int i = 0; i < columnsCount; i++) {
             TableColumn tableColumn = table.getColumnModel().getColumn(i);
-            tableColumn.setCellRenderer(new CellRenderer());
+            tableColumn.setCellRenderer(cellRenderer);
             tableColumn.setCellEditor(editor);
             int widthUnits = sheet.getColumnWidth(i);
             tableColumn.setPreferredWidth(widthUnitsToPixel(widthUnits));
         }
 
         int rowCount = sheetTableModel.getRowCount();
+        int extraMargin = addExtraSpace ? CELL_EXTRA_HEIGHT_MARGINS : CELL_HEIGHT_MARGINS;
         for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
             Row row = sheet.getRow(rowIndex);
             if (row != null) {
                 int cellHeight = (int) Math.ceil(sheet.getRow(rowIndex).getHeightInPoints());
-                cellHeight += CELL_HEIGHT_MARGINS;
+                cellHeight += extraMargin;
                 table.setRowHeight(rowIndex, cellHeight);
             }
         }
@@ -161,8 +162,8 @@ public class SheetComponent extends JPanel {
                 table.setSize(d);
             }
         };
-        // NB you must use new Integer() - the int version is a different method
-        layers.add(table, new Integer(DEFAULT_LAYER), 0);
+        // NB you must use Integer.valueOf - the int version is a different method
+        layers.add(table, Integer.valueOf(JLayeredPane.DEFAULT_LAYER), 0);
         return layers;
     }
 
@@ -177,26 +178,18 @@ public class SheetComponent extends JPanel {
     }
 
     public void listenToChanges() {
-        sheetTable.getModel().addTableModelListener(new TableModelListener() {
-
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                getSpreadsheetComponent().setModified(true);
-            }
+        sheetTable.getModel().addTableModelListener(tme -> {
+            firePropertyChange(SHEET_MODIFIED_PROPERTY, false, true);
         });
-        sheetTable.addPropertyChangeListener("singleRowHeight", new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                int rowChanged = (Integer) evt.getNewValue();
-                int newHeight = sheetTable.getRowHeight(rowChanged);
-                if (newHeight != sheetTable.getRowHeight(rowChanged)) {
-                    Row row = sheet.getRow(rowChanged);
-                    if (row == null) {
-                        row = sheet.createRow(rowChanged);
-                    }
-                    row.setHeight((short) newHeight);
+        sheetTable.addPropertyChangeListener("singleRowHeight", pce -> {
+            int rowChanged = (Integer) pce.getNewValue();
+            int newHeight = sheetTable.getRowHeight(rowChanged);
+            if (newHeight != sheetTable.getRowHeight(rowChanged)) {
+                Row row = sheet.getRow(rowChanged);
+                if (row == null) {
+                    row = sheet.createRow(rowChanged);
                 }
+                row.setHeight((short) newHeight);
             }
         });
     }
@@ -209,20 +202,13 @@ public class SheetComponent extends JPanel {
         return sheet;
     }
 
-    public void setSheet(Sheet sheet) {
+    public void setSheet(Sheet sheet, boolean addExtraSpace) {
         this.sheet = sheet;
-        SheetTableModel sheetTableModel = new SheetTableModel(sheet);
+        this.addExtraSpace = addExtraSpace;
+        SheetTableModel sheetTableModel = new SheetTableModel(sheet, addExtraSpace);
         sheetTable.setModel(sheetTableModel);
-        sheetTableModel.addTableModelListener(new TableModelListener() {
-
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                getSpreadsheetComponent().setModified(true);
-            }
+        sheetTableModel.addTableModelListener(tme -> {
+            firePropertyChange(SHEET_MODIFIED_PROPERTY, false, true);
         });
-    }
-
-    public SpreadsheetComponent getSpreadsheetComponent() {
-        return spreadsheetComponent;
     }
 }

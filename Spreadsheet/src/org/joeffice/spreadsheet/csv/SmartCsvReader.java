@@ -25,6 +25,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -33,7 +34,6 @@ import org.h2.tools.Csv;
 import org.h2.tools.SimpleResultSet;
 import org.joeffice.spreadsheet.cell.CellUtils;
 import org.mozilla.universalchardet.UniversalDetector;
-import org.openide.util.Exceptions;
 
 /**
  * Smart CSV reader is a CSV reader that is able to detect:
@@ -93,7 +93,7 @@ public class SmartCsvReader {
                 return detector.getDetectedCharset();
             }
         } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+            // Ignore and use UTF-8
         }
         return "UTF-8";
     }
@@ -188,6 +188,7 @@ public class SmartCsvReader {
                 for (int i = 0; i < meta.getColumnCount(); i++) {
                     Cell dataCell = dataRow.createCell(i);
                     String cellValue = rs.getString(i + 1);
+                    if (cellValue == null) continue;
                     try {
                         double cellNumericValue = Double.parseDouble(cellValue);
                         dataCell.setCellValue(cellNumericValue);
@@ -199,7 +200,7 @@ public class SmartCsvReader {
             }
             rs.close();
         } catch (SQLException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new IOException("Failed to read CSV", ex);
         }
         csvSheet.setDefaultColumnWidth(-1);
         return csvWorkbook;
@@ -219,7 +220,7 @@ public class SmartCsvReader {
                 Cell cell = row.getCell(j);
                 rowValues[j] = CellUtils.getFormattedText(cell);
             }
-            rs.addRow(rowValues);
+            rs.addRow((Object[]) rowValues);
         }
         Writer writer = new BufferedWriter(new OutputStreamWriter(output, charset));
         try {

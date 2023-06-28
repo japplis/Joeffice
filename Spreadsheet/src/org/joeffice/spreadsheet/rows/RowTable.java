@@ -16,9 +16,8 @@
 package org.joeffice.spreadsheet.rows;
 
 import java.awt.Dimension;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.LookAndFeel;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -39,14 +38,19 @@ public class RowTable extends JTable {
         LookAndFeel.installColorsAndFont(this, "TableHeader.background", "TableHeader.foreground", "TableHeader.font");
 
         getColumnModel().getColumn(0).setHeaderValue("");
-        getColumnModel().getColumn(0).setPreferredWidth(40);
-        Dimension d = getPreferredScrollableViewportSize();
-        d.width = getPreferredSize().width;
-        setPreferredScrollableViewportSize(d);
         setRowHeight(dataTable.getRowHeight());
+        setRowMargin(0);
         RowHeadersRenderer rowRenderer = new RowHeadersRenderer();
         setDefaultRenderer(String.class, rowRenderer); // This doesn't work!
         getColumnModel().getColumn(0).setCellRenderer(rowRenderer);
+        String referenceWidth = dataTable.getRowCount() < 999 ? "799" : "9" + dataTable.getRowCount();
+        int columnWidth = rowRenderer.getTableCellRendererComponent(this, referenceWidth, false, false, 0, 0)
+                .getPreferredSize().width + 4;
+        getColumnModel().getColumn(0).setPreferredWidth(columnWidth);
+        getColumnModel().getColumn(0).setWidth(columnWidth);
+        Dimension d = getPreferredScrollableViewportSize();
+        d.width = getPreferredSize().width;
+        setPreferredScrollableViewportSize(d);
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         JTableHeader corner = getTableHeader();
@@ -76,7 +80,8 @@ public class RowTable extends JTable {
         DefaultTableModel rowTableModel = new DefaultTableModel(dataTable.getRowCount(), 1) {
             @Override
             public Object getValueAt(int rowIndex, int columnIndex) {
-                return "" + (rowIndex + 1);
+                int modelRowIndex = dataTable.convertRowIndexToModel(rowIndex);
+                return "" + (modelRowIndex + 1);
             }
 
             @Override

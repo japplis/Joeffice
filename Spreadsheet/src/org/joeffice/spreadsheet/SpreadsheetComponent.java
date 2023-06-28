@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Japplis.
+ * Copyright 2013-2022 Japplis.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.joeffice.desktop.ui.OfficeTopComponent;
 import org.joeffice.spreadsheet.actions.ShowHideGridAction;
 import org.openide.util.Utilities;
-
-import static javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT;
 import org.openide.filesystems.FileUtil;
 
 /**
@@ -46,43 +44,54 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
     private TableStyleable styleable;
     private SpreadsheetTopComponent spreadsheetAndToolbar;
 
-    public SpreadsheetComponent(SpreadsheetTopComponent spreadsheetAndToolbar) {
+    /**
+     * Creates a spreadsheet component that doesn't depend on NetBeans framework classes
+     */
+    public SpreadsheetComponent() {
         super(JTabbedPane.BOTTOM, SCROLL_TAB_LAYOUT);
-        this.spreadsheetAndToolbar = spreadsheetAndToolbar;
         initComponents();
     }
 
     private void initComponents() {
-        addPopupToTabs();
         styleable = new TableStyleable();
         addChangeListener(this);
     }
 
     public void load(Workbook workbook) {
+        removeAll();
         this.workbook = workbook;
         int numberOfSheets = workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             String sheetName = workbook.getSheetName(i);
-            JPanel sheetPanel = new SheetComponent(sheet, this);
+            JPanel sheetPanel = new SheetComponent(sheet);
             addTab(sheetName, sheetPanel);
+            sheetPanel.addPropertyChangeListener(SheetComponent.SHEET_MODIFIED_PROPERTY, pce -> setModified(true));
         }
-        setSelectedIndex(workbook.getActiveSheetIndex());
+        int activeSheetIndex = workbook.getActiveSheetIndex();
+        if (activeSheetIndex < 0) activeSheetIndex = 0;
+        setSelectedIndex(activeSheetIndex);
         formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
     }
 
     // Due to bug https://issues.apache.org/bugzilla/show_bug.cgi?id=49940
     public void reload() {
+        if (spreadsheetAndToolbar == null) return;
         this.workbook = spreadsheetAndToolbar.getWorkbook();
         int numberOfSheets = workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
             Sheet sheet = workbook.getSheetAt(i);
-            ((SheetComponent) getComponentAt(i)).setSheet(sheet);
+            ((SheetComponent) getComponentAt(i)).setSheet(sheet, true);
         }
     }
 
-    public SpreadsheetTopComponent getSpreadsheetAndToolbar() {
+    public JComponent getSpreadsheetAndToolbar() {
         return spreadsheetAndToolbar;
+    }
+
+    public void setSpreadsheetAndToolbar(SpreadsheetTopComponent spreadsheetAndToolbar) {
+        this.spreadsheetAndToolbar = spreadsheetAndToolbar;
+        addPopupToTabs();
     }
 
     public SheetComponent getSelectedSheet() {
@@ -119,8 +128,9 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
         Sheet sheet = workbook.createSheet(name);
         int newSheetPosition = workbook.getActiveSheetIndex() + 1;
         workbook.setSheetOrder(name, newSheetPosition);
-        JPanel sheetPanel = new SheetComponent(sheet, this);
+        JPanel sheetPanel = new SheetComponent(sheet);
         insertTab(name, null, sheetPanel, null, newSheetPosition);
+        sheetPanel.addPropertyChangeListener(SheetComponent.SHEET_MODIFIED_PROPERTY, pce -> setModified(true));
 
         setSelectedIndex(newSheetPosition);
         setModified(true);
@@ -149,6 +159,7 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
     }
 
     public void setModified(boolean modified) {
+        if (spreadsheetAndToolbar == null) return;
         spreadsheetAndToolbar.getDataObject().setModified(modified);
     }
 
@@ -156,6 +167,7 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
      * Registers the table actions also in the TopComponent (for example to active global actions)
      */
     public void registerActions() {
+        if (spreadsheetAndToolbar == null) return;
         ActionMap topComponentActions = spreadsheetAndToolbar.getActionMap();
         ActionMap tableActions = getSelectedSheet().getTable().getActionMap();
 
@@ -164,7 +176,7 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
         topComponentActions.put(DefaultEditorKit.copyAction, tableActions.get(DefaultEditorKit.copyAction));
         topComponentActions.put(DefaultEditorKit.pasteAction, tableActions.get(DefaultEditorKit.pasteAction));
         spreadsheetAndToolbar.getServices().add(styleable);
-        // FIME Actions not found. Should the property be used instead of search for the action ?
+        // FIXME Actions not found. Should the property be used instead of search for the action ?
         ShowHideGridAction showHideGridAction = //(ShowHideGridAction) OfficeUIUtils.findAction("View/Office/Spreadsheet", "org-joeffice-spreadsheet-actions-ShowHideGridAction");
                 FileUtil.getConfigObject("Actions/View/Office/Spreadsheet/org-joeffice-spreadsheet-actions-ShowHideGridAction.instance", ShowHideGridAction.class);
                 // (ShowHideGridAction) Actions.forID("View/Office/Spreadsheet", "org.joeffice.spreadsheet.actions.ShowHideGridAction"); // ClassCastException AlwaysEnabledAction <-> ShowHideGridAction due to lazy = true by default
@@ -181,6 +193,7 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
     }
 
     public void unregisterActions() {
+        if (spreadsheetAndToolbar == null) return;
         spreadsheetAndToolbar.getServices().remove(styleable);
     }
 
