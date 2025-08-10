@@ -14,6 +14,9 @@
 - Close workbook before opening a new one
 - Always use default cell alignment when not specified
 
+### Presentation
+- Fixed extra empty line showing on bullet lists
+
 ## 1.0 alpha 2
 
 ### General
