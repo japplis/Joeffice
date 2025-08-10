@@ -108,22 +108,20 @@ public class ShapeComponent extends JPanel implements DocumentListener {
         for (XSLFTextParagraph paragraph : paragraphs) {
             applyAlignment(paragraph, textField);
             List<XSLFTextRun> textParts = paragraph.getTextRuns();
+            String simpleBullet = getBullet(paragraph);
             for (XSLFTextRun textPart : textParts) {
                 try {
-                    String text = textPart.getRawText();
+                    String text = simpleBullet + textPart.getRawText();
+                    if (!simpleBullet.isEmpty()) simpleBullet = ""; // One bullet per paragraph
                     AttributeSet attributes = null;
-                    String simpleBullet = "";
                     try {
                         attributes = getFontAttributes(textPart);
-                        simpleBullet = getBullet(paragraph);
                     } catch (Exception ex) {
                         // ignore
                     }
-                    if (!text.isEmpty()) {
-                        text = simpleBullet + text;
-                    }
                     if (newLine) {
                         text = "\r\n" + text;
+                        newLine = false;
                     }
                     int documentLength = textField.getDocument().getLength();
                     textField.getDocument().insertString(documentLength, text, attributes);
