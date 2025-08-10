@@ -30,8 +30,9 @@ import org.joeffice.spreadsheet.actions.ClipboardAction;
 import org.joeffice.spreadsheet.sheet.SheetListener;
 
 import org.joeffice.spreadsheet.cell.CellRenderer;
-import org.joeffice.spreadsheet.sheet.TableColumnAdjuster;
+import org.joeffice.spreadsheet.cell.CellUtils;
 import org.joeffice.spreadsheet.rows.RowTableFactory;
+import org.joeffice.spreadsheet.sheet.TableColumnAdjuster;
 import org.joeffice.spreadsheet.sheet.SheetTableModel;
 
 /**
@@ -72,7 +73,7 @@ public class SheetComponent extends JPanel {
         ScrollPaneSelector.installScrollPaneSelector(scrolling);
 
         setLayout(new BorderLayout());
-        add(scrolling);
+        add(scrolling, BorderLayout.CENTER);
     }
 
     public JTable createTable(Sheet sheet) {
@@ -94,11 +95,13 @@ public class SheetComponent extends JPanel {
 
         int rowCount = sheetTableModel.getRowCount();
         int extraMargin = addExtraSpace ? CELL_EXTRA_HEIGHT_MARGINS : CELL_HEIGHT_MARGINS;
+        table.setRowHeight((int) (table.getRowHeight() * CellUtils.getZoomFonts()));
         for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
             Row row = sheet.getRow(rowIndex);
             if (row != null) {
                 int cellHeight = (int) Math.ceil(sheet.getRow(rowIndex).getHeightInPoints());
                 cellHeight += extraMargin;
+                cellHeight = (int) (cellHeight * CellUtils.getZoomFonts());
                 table.setRowHeight(rowIndex, cellHeight);
             }
         }

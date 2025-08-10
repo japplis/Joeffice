@@ -25,7 +25,7 @@ import javax.swing.JProgressBar;
 
 /**
  * Applet to start Joeffice in a browser.
- * Test at http://www.joeffice.net/test123.html
+ * Test at http://www.joeffice.com/online/index.html
  *
  * @author Anthony Goubard - Japplis
  */
@@ -46,8 +46,11 @@ public final class JoefficeApplet extends JApplet {
 
     private boolean checkDocument() {
         String documentBase = getDocumentBase().toString();
-        return documentBase.startsWith("http://www.japplis.com/") || documentBase.startsWith("http://www.joeffice.net/") ||
-                documentBase.startsWith("http://japplis.com/") || documentBase.startsWith("http://joeffice.net/");
+        if (!documentBase.startsWith("http://") && !documentBase.startsWith("https://")) return false;
+        documentBase = documentBase.substring(documentBase.indexOf("://") + 3);
+        return documentBase.startsWith("www.japplis.com/") || documentBase.startsWith("www.joeffice.net/") ||
+                documentBase.startsWith("japplis.com/") || documentBase.startsWith("joeffice.net/") ||
+                documentBase.startsWith("www.joeffice.com/") || documentBase.startsWith("joeffice.com/");
     }
 
     private File copyFiles() {
@@ -56,7 +59,7 @@ public final class JoefficeApplet extends JApplet {
         JProgressBar downloadProgressBar = initUI(destinationZip);
         try {
             System.out.println("Downloading Joeffice...");
-            FileUtils.copyURL(new URL("http://www.joeffice.net/joeffice.zip"), destinationZip);
+            FileUtils.copyURL(new URL("https://www.joeffice.com/online/joeffice.zip"), destinationZip);
             System.out.println("Joeffice downloaded...");
             //FileUtils.copyURL(new File("c:/Java/projects/joeffice/dist/Joeffice.zip").toURI().toURL(), destinationZip);
         } catch (IOException ex) {
@@ -131,7 +134,6 @@ public final class JoefficeApplet extends JApplet {
             executeMain();
             mainWindow = getMainWindow();
             putWindowInApplet();
-
         } catch (Exception ex) {
             System.out.println("error start " + ex.getMessage());
             ex.printStackTrace(System.out);

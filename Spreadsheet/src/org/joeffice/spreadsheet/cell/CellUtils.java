@@ -42,6 +42,7 @@ import org.joeffice.spreadsheet.sheet.SheetTableModel;
 public class CellUtils {
 
     private final static DataFormatter DATA_FORMATTER = new DataFormatter();
+    private static Float zoomFonts;
 
     // Only static methods
     private CellUtils() {
@@ -290,5 +291,16 @@ public class CellUtils {
             }
         }
         return cells;
+    }
+
+    public static float getZoomFonts() {
+        if (zoomFonts == null) {
+            if (System.getProperty("os.name").contains("Windows")) {
+                zoomFonts = 96 / 72.0f;
+            } else {
+                zoomFonts = 1.0f;
+            }
+        }
+        return zoomFonts;
     }
 }

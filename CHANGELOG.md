@@ -1,11 +1,27 @@
 # Changelog
 
+## 1.0 alpha 3
+
+### General
+- Use correct size for fonts on Windows
+- Changed applet location to joeffice.com/online
+- Added how to generate binaries to build
+- Minor bug fixes
+
+### Spreadsheet
+- Fixed last row sometimes not taken into account
+- Detect dates in CSV files
+- Close workbook before opening a new one
+- Always use default cell alignment when not specified
+
 ## 1.0 alpha 2
 
 ### General
 - Migrated from Bitbucket to GitHub
 - Dark mode using FlafLaf 1.0
 - Added Applet that allows to start Joeffice embedded in any software accepting applets
+- Signed Windows installed
+- Created dmg signed and notarized for Mac OS X
 
 ### Word Processor
 - Created component not dependant of NetBeans Platform that can be embedded in other Java application

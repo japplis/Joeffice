@@ -42,12 +42,12 @@ public class SheetTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        int lastRowNum = getLastRowNum();
-        if (!extraSpace) return lastRowNum;
-        if (lastRowNum < 100) {
-            return lastRowNum + 100;
+        int rowCount = getLastRowNum() + 1;
+        if (!extraSpace) return rowCount;
+        if (rowCount < 100) {
+            return rowCount + 100;
         } else {
-            return lastRowNum + 30;
+            return rowCount + 30;
         }
     }
 
@@ -95,7 +95,7 @@ public class SheetTableModel extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return editable;
     }
-    
+
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
@@ -151,7 +151,7 @@ public class SheetTableModel extends AbstractTableModel {
     }
 
     public void removeColumns(int... columns) {
-        for (int rowIndex = 0; rowIndex < sheet.getLastRowNum(); rowIndex++) {
+        for (int rowIndex = 0; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             Row row = sheet.getRow(rowIndex);
             if (row != null) {
                 short lastColumn = row.getLastCellNum();
@@ -182,7 +182,7 @@ public class SheetTableModel extends AbstractTableModel {
     }
 
     public void insertColumn(int columnIndex) {
-        for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
+        for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             if (row != null) {
                 for (int j = row.getLastCellNum(); j > columnIndex; j--) {
@@ -195,7 +195,7 @@ public class SheetTableModel extends AbstractTableModel {
     }
 
     public void removeColumn(int columnIndex) {
-        for (int rowIndex = sheet.getFirstRowNum(); rowIndex < sheet.getLastRowNum(); rowIndex++) {
+        for (int rowIndex = sheet.getFirstRowNum(); rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             deleteCell(rowIndex, columnIndex);
         }
         fireTableStructureChanged();

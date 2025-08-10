@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -189,11 +191,16 @@ public class SmartCsvReader {
                     Cell dataCell = dataRow.createCell(i);
                     String cellValue = rs.getString(i + 1);
                     if (cellValue == null) continue;
-                    try {
-                        double cellNumericValue = Double.parseDouble(cellValue);
-                        dataCell.setCellValue(cellNumericValue);
-                    } catch (NumberFormatException ex) {
-                        dataCell.setCellValue(cellValue);
+                    LocalDate date = toLocalDate(cellValue);
+                    if (date == null) {
+                        try {
+                            double cellNumericValue = Double.parseDouble(cellValue);
+                            dataCell.setCellValue(cellNumericValue);
+                        } catch (NumberFormatException ex) {
+                            dataCell.setCellValue(cellValue);
+                        }
+                    } else {
+                        dataCell.setCellValue(date);
                     }
                 }
                 rowIndex++;
@@ -204,6 +211,16 @@ public class SmartCsvReader {
         }
         csvSheet.setDefaultColumnWidth(-1);
         return csvWorkbook;
+    }
+
+    private LocalDate toLocalDate(String value) {
+        if (value.matches("(19|20)\\d\\d-(0[1-9]|10|11||12)-(31|30|[0-2][0-9])")) {
+            return LocalDate.parse(value, DateTimeFormatter.ISO_DATE);
+        }
+        if (value.matches("(19|20)\\d\\d(0[1-9]|10|11||12)(31|30|[0-2][0-9])")) {
+            return LocalDate.parse(value, DateTimeFormatter.BASIC_ISO_DATE);
+        }
+        return null;
     }
 
     public void write(OutputStream output, Workbook workbook) throws IOException {

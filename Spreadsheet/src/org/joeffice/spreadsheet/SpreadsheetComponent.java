@@ -17,7 +17,10 @@ package org.joeffice.spreadsheet;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -58,14 +61,14 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
     }
 
     public void load(Workbook workbook) {
-        removeAll();
+        closeWorkbook();
         this.workbook = workbook;
         int numberOfSheets = workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             String sheetName = workbook.getSheetName(i);
-            JPanel sheetPanel = new SheetComponent(sheet);
-            addTab(sheetName, sheetPanel);
+            JComponent sheetPanel = new SheetComponent(sheet); //new JScrollPane(new JTable(20, 50));
+            add(sheetName, sheetPanel);
             sheetPanel.addPropertyChangeListener(SheetComponent.SHEET_MODIFIED_PROPERTY, pce -> setModified(true));
         }
         int activeSheetIndex = workbook.getActiveSheetIndex();
@@ -82,6 +85,22 @@ public class SpreadsheetComponent extends JTabbedPane implements ChangeListener 
         for (int i = 0; i < numberOfSheets; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             ((SheetComponent) getComponentAt(i)).setSheet(sheet, true);
+        }
+    }
+    
+    private void closeWorkbook() {
+        if (getTabCount() > 0) {
+            for (int i = 0; i < getTabCount(); i++) {
+                JComponent jpTab = (JComponent) getTabComponentAt(i);
+                Stream.of(jpTab.getPropertyChangeListeners()).forEach(jpTab::removePropertyChangeListener);
+            }
+            removeAll();
+        }
+        if (this.workbook != null && this.workbook != workbook) {
+            try {
+                this.workbook.close();
+            } catch (IOException ex) {
+            }
         }
     }
 

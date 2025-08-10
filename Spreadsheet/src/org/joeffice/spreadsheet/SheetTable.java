@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
@@ -42,10 +43,9 @@ public class SheetTable extends JTable {
 
     @Override
     public void setRowHeight(int row, int rowHeight) {
-        int oldRowHeight = getRowHeight(row);
         super.setRowHeight(row, rowHeight);
         // Fire the row changed
-        firePropertyChange("singleRowHeight", oldRowHeight, row);
+        firePropertyChange("singleRowHeight", -1, row);
     }
 
     @Override

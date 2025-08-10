@@ -20,10 +20,7 @@ import java.awt.Component;
 import java.text.NumberFormat;
 import java.util.EnumSet;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.poi.ss.usermodel.*;
@@ -46,13 +43,9 @@ public class CellRenderer extends DefaultTableCellRenderer {
     private final static CellRenderer DEFAULT_RENDERER = new CellRenderer();
 
     private FormulaEvaluator formulaEvaluator;
-    private float windowsFontZoom = 1.0f; // Swing seems to use 72 DPI and Windows 96 DPI
 
     public CellRenderer() {
         DATA_FORMATTER.setDefaultNumberFormat(NumberFormat.getInstance());
-        if (System.getProperty("os.name").contains("Windows")) {
-            windowsFontZoom = 96 / 72.0f;
-        }
     }
 
     @Override
@@ -60,6 +53,8 @@ public class CellRenderer extends DefaultTableCellRenderer {
         //System.out.println("row " + row + "; column " + column + "; isSelected " + isSelected);
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (!isSelected) setBackground(UIManager.getColor("Table.background"));
+        setHorizontalAlignment(SwingConstants.LEADING);
+        setVerticalAlignment(SwingConstants.CENTER);
         if (value != null) {
             JLabel defaultComponent = (JLabel) DEFAULT_RENDERER.getTableCellRendererComponent(table, null, isSelected, hasFocus, row, column);
             Cell cell = (Cell) value;
@@ -150,7 +145,7 @@ public class CellRenderer extends DefaultTableCellRenderer {
         if (fontIndex >= 0) {
             Font xlsFont = cell.getSheet().getWorkbook().getFontAt(fontIndex);
             java.awt.Font font = java.awt.Font.decode(xlsFont.getFontName());
-            font = font.deriveFont(xlsFont.getFontHeightInPoints() * windowsFontZoom);
+            font = font.deriveFont(xlsFont.getFontHeightInPoints() * CellUtils.getZoomFonts());
             font = font.deriveFont(java.awt.Font.PLAIN);
             if (xlsFont.getItalic() && xlsFont.getBold()) {
                 font = font.deriveFont(java.awt.Font.ITALIC | java.awt.Font.BOLD);

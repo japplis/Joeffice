@@ -24,7 +24,7 @@ Software website (for users):
 https://www.joeffice.com/
 
 Open source project page (for developer / contributors): 
-https://www.joeffice.org/
+https://www.joeffice.com/contribute.html
 
 What are the advantages compared to Microsoft Office:
 * Free and Open Source
@@ -50,3 +50,8 @@ What are the advantages compared to Microsoft Office:
 
 ### For feature requests:
  * Contact info@japplis.com
+
+## Sponsors
+<a href="https://www.antcommander.com/">![Ant Commander Pro Logo](https://www.antcommander.com/images/AntCommanderProSponsor100.png)</a>
+
+This open source project is sponsored by <a href="https://www.antcommander.com/">Ant Commander Pro File Manager</a>. A professional file manager for Windows, MacOS and Linux for developers and more.

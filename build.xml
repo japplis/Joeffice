@@ -5,4 +5,35 @@
 <project name="Joeffice" basedir=".">
     <description>Builds the module suite Joeffice.</description>
     <import file="nbproject/build-impl.xml"/>
+    
+    <!-- Release -->
+    <!--
+        Right click Joeffice project -> Package as -> Installers
+        
+        Windows: 
+        "\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe" sign /t http://timestamp.digicert.com /f \Java\projects\...\signing-file.pfx /p <the_password> \Java\projects\Joeffice\dist\joeffice-windows.exe
+
+        Mac OS X:
+        - Right click Joeffice project -> Package as -> Mac OS X Application
+        - Copy directory to Dropbox to get in on Mac OS
+cd ~/signpackage-master
+java -jar target/SignPackage-1.0-jar-with-dependencies.jar -d ~/Dropbox/Projects/Joeffice/joeffice.app -t -r -k "Developer ID Application: Anthony Goubard (XXXXXXXXX)"
+
+cd ~/Dropbox/Projects/Joeffice
+rm Joeffice.dmg
+hdiutil create Joeffice.dmg -srcfolder joeffice.app
+xcrun altool - -notarize-app - -primary-bundle-id "joeffice" - -username "info@japplis.com" - -password "@keychain:Joeffice" - -file "Joeffice.dmg"
+xcrun altool - -notarization-info <RequestUUID> - -username "info@japplis.com" - -password "@keychain:Joeffice"
+xcrun stapler staple Joeffice.dmg
+    -->
+    <target name="copy-installers">
+      <property name="joeffice.website.dir" location="../../japplis/joeffice/joeffice.com" />
+      <copy todir="${joeffice.website.dir}">
+        <fileset dir="dist">
+          <exclude name="joeffice.app/**" />
+        </fileset>
+        <regexpmapper from="joeffice.*(\.[a-z]+)$$" to="Joeffice\1"/>
+      </copy>
+      <copy file="C:\Users\Anthony\Dropbox\Projects\Joeffice\Joeffice.dmg" todir="${joeffice.website.dir}" />
+    </target>
 </project>

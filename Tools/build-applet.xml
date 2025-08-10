@@ -3,7 +3,7 @@
   <description>Builds the Applet Joeffice.</description>
 
   <target name="package-applet" description="Package the applet">
-    <property name="applet-path" location="c:/java/japplis/joeffice/joeffice.net" />
+    <property name="applet-path" location="c:/java/japplis/joeffice/joeffice.com/online" />
     <delete dir="build/classes" />
     <mkdir dir="build/classes" />
     <javac destdir="build/classes" srcdir="tools/src" debug="true">
@@ -18,8 +18,8 @@
     <jar destfile="${applet-path}/JoefficeApplet.jar" basedir="build/classes">
       <manifest>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="www.jappli.com www.japplis.com www.joeffice.net"/>
-        <attribute name="Application-Library-Allowable-Codebase" value="www.jappli.com www.japplis.com www.joeffice.net"/>
+        <attribute name="Codebase" value="www.jappli.com www.japplis.com www.joeffice.net www.joeffice.com"/>
+        <attribute name="Application-Library-Allowable-Codebase" value="www.jappli.com www.japplis.com www.joeffice.net www.joeffice.com"/>
         <attribute name="Implementation-Title" value="Joeffice"/>
         <attribute name="Implementation-Vendor" value="Japplis"/>
       </manifest>
